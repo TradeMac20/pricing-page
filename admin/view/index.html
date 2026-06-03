@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAT Colour Multimedia Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Source+Sans+3:wght@400;600;700;800&family=Playfair+Display:wght@600;700;800&family=Outfit:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../../assets/css/styles.css">
+</head>
+<body data-page="admin">
+
+<nav>
+  <div class="nav-logo">DAT COLOUR MULTIMEDIA</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-action="show-tab" data-tab="services">Services</button>
+    <button class="nav-tab" data-action="show-tab" data-tab="prices">Price List</button>
+    <button class="nav-tab" data-action="show-tab" data-tab="calculator">Calculator</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Creating Beyond<br><span>Imagination</span></h1>
+  <p>Printing · Souvenirs · Framing · Branding</p>
+</div>
+
+<!-- ======================== SERVICES PAGE ======================== -->
+<div class="page active" id="page-services">
+
+  <div class="send-btn-wrap">
+    <button class="btn-primary" data-action="send-to-customer">
+      <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
+      Send to Customer
+    </button>
+    <div class="link-box" id="customer-link-box"></div>
+    <span class="copy-msg" id="copy-msg">Link copied!</span>
+  </div>
+
+  <div class="service-cats">
+    <button class="cat-btn active" data-action="show-cat" data-cat="printing">
+      <span class="cat-dot dot-printing"></span> General Printing
+    </button>
+    <button class="cat-btn" data-action="show-cat" data-cat="souvenirs">
+      <span class="cat-dot dot-souvenirs"></span> Souvenirs
+    </button>
+    <button class="cat-btn" data-action="show-cat" data-cat="framing">
+      <span class="cat-dot dot-framing"></span> Framing
+    </button>
+    <button class="cat-btn" data-action="show-cat" data-cat="branding">
+      <span class="cat-dot dot-branding"></span> Branding
+    </button>
+  </div>
+
+  <div id="panel-printing" class="services-panel active"></div>
+  <div id="panel-souvenirs" class="services-panel"></div>
+  <div id="panel-framing" class="services-panel"></div>
+  <div id="panel-branding" class="services-panel"></div>
+
+</div>
+
+<!-- ======================== PRICE LIST PAGE ======================== -->
+<div class="page" id="page-prices">
+  <div class="price-toolbar">
+    <h2>Price List</h2>
+    <div class="toolbar-actions">
+      <button class="btn-ghost" data-action="add-service-modal">+ Add Service</button>
+      <button class="btn-primary" data-action="save-prices">Save Changes</button>
+    </div>
+  </div>
+
+  <div class="cloud-sync-panel" aria-label="Cloud persistence">
+    <input class="cloud-token-input" id="cloud-token" type="password" placeholder="Cloud admin token" autocomplete="off" />
+    <button class="btn-ghost" data-action="save-cloud-token">Save Token</button>
+    <button class="btn-ghost" data-action="load-cloud">Refresh Cloud</button>
+    <button class="btn-primary" data-action="save-cloud">Save to Cloud</button>
+    <span class="cloud-sync-status" id="cloud-sync-status">Browser storage active</span>
+  </div>
+
+  <div id="price-sections"></div>
+</div>
+
+<!-- ======================== CALCULATOR PAGE ======================== -->
+<div class="page" id="page-calculator">
+  <h2 class="section-title">Price Calculator</h2>
+  <p class="section-subtitle">Select a preset or build a custom quote</p>
+
+  <div class="calc-layout">
+    <div class="presets-panel">
+      <h3>Presets</h3>
+      <div class="preset-list" id="preset-list"></div>
+      <div class="new-preset-panel">
+        <p class="new-preset-label">New preset from current</p>
+        <div class="new-preset-form">
+          <input class="new-preset-input" id="new-preset-name" placeholder="Preset name..." />
+          <button class="btn-primary btn-small" data-action="save-preset">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-panel">
+      <h3>Quote Builder</h3>
+      <div id="calc-groups"></div>
+
+      <div class="calc-total-bar">
+        <div>
+          <div class="total-label">Total Estimate</div>
+          <div class="currency-label" id="currency-label">GHS</div>
+        </div>
+        <div class="total-val" id="calc-total">0.00</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SAVE BANNER ======================== -->
+<div class="save-banner" id="save-banner">
+  <span>You have unsaved changes</span>
+  <button class="btn-primary" data-action="save-prices">Save</button>
+  <button class="btn-ghost" data-action="hide-save-banner">Dismiss</button>
+</div>
+
+<!-- ======================== ADD SERVICE MODAL ======================== -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal">
+    <h2>Add New Service</h2>
+    <label>Category</label>
+    <select id="modal-cat">
+      <option value="printing">General Printing</option>
+      <option value="souvenirs">Souvenirs</option>
+      <option value="framing">Framing</option>
+      <option value="branding">Branding</option>
+    </select>
+    <label>Service Name</label>
+    <input id="modal-name" placeholder="e.g. Business Cards" />
+    <label>Price (GHS)</label>
+    <input id="modal-price" type="number" placeholder="0.00" step="0.01" />
+    <label>Unit</label>
+    <input id="modal-unit" placeholder="e.g. per page, per piece" />
+    <label>Description (optional)</label>
+    <input id="modal-desc" placeholder="Short description..." />
+    <div class="modal-btns">
+      <button class="btn-ghost" data-action="close-modal">Cancel</button>
+      <button class="btn-primary" data-action="confirm-add-service">Add Service</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== TOAST ======================== -->
+<div class="toast" id="toast">Changes saved!</div>
+
+<script src="../../assets/js/data.js"></script>
+<script src="../../assets/js/navigation.js"></script>
+<script src="../../assets/js/services.js"></script>
+<script src="../../assets/js/calculator.js"></script>
+<script src="../../assets/js/customer-view.js"></script>
+<script src="../../assets/js/app.js"></script>
+</body>
+</html>
