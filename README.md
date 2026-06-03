@@ -110,6 +110,8 @@ Create a Cloudflare KV namespace and bind it to the Pages project:
 Binding name: DAT_CATALOG
 ```
 
+`DAT_CATALOG` is preferred. If you already named the binding `KV`, the function also accepts that name.
+
 Add an environment variable or secret:
 
 ```text
