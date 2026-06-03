@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAT Persistence Test</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 2rem;
+    background: #111016;
+    color: #f2f0f8;
+  }
+  h1 { font-size: 1.4rem; }
+  button {
+    border: 0;
+    border-radius: 999px;
+    background: #c0006e;
+    color: #fff;
+    cursor: pointer;
+    padding: 0.7rem 1.2rem;
+  }
+  .results {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    max-width: 760px;
+  }
+  .result {
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+  }
+  .pass { border-color: rgba(85,221,170,0.5); color: #55ddaa; }
+  .fail { border-color: rgba(255,136,136,0.5); color: #ff8888; }
+</style>
+</head>
+<body>
+<h1>DAT Pricing Site Persistence Test</h1>
+<p>This test backs up the current browser storage, runs persistence checks, then restores the original values.</p>
+<button id="run-tests" type="button">Run Tests</button>
+<div class="results" id="results" aria-live="polite"></div>
+
+<script src="../assets/js/data.js"></script>
+<script>
+  const button = document.getElementById('run-tests');
+  const results = document.getElementById('results');
+
+  function report(name, passed, detail) {
+    const item = document.createElement('div');
+    item.className = 'result ' + (passed ? 'pass' : 'fail');
+    item.textContent = (passed ? 'PASS: ' : 'FAIL: ') + name + (detail ? ' - ' + detail : '');
+    results.appendChild(item);
+  }
+
+  function assert(name, condition, detail) {
+    report(name, Boolean(condition), detail);
+    if (!condition) throw new Error(name);
+  }
+
+  function restore(key, value) {
+    if (value === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, value);
+    }
+  }
+
+  button.addEventListener('click', () => {
+    results.innerHTML = '';
+    const serviceKey = DatApp.STORAGE_KEYS.services;
+    const presetKey = DatApp.STORAGE_KEYS.presets;
+    const originalServices = localStorage.getItem(serviceKey);
+    const originalPresets = localStorage.getItem(presetKey);
+
+    try {
+      const customCatalog = DatApp.cloneData(DatApp.DEFAULT_DATA);
+      customCatalog.printing.push({
+        id: 'p-custom-test',
+        name: 'Custom Test Service',
+        price: 9.5,
+        unit: 'per piece',
+        desc: 'Temporary persistence test service',
+      });
+
+      localStorage.setItem(serviceKey, JSON.stringify(customCatalog));
+      localStorage.setItem(presetKey, JSON.stringify([
+        { name: 'Custom Preset', items: { 'p-custom-test': 2, missing: 99 } }
+      ]));
+
+      DatApp.state = DatApp.createState(localStorage);
+      assert(
+        'custom service survives initialization',
+        DatApp.state.services.printing.some(service => service.id === 'p-custom-test')
+      );
+      assert(
+        'preset keeps custom service reference',
+        DatApp.state.presets[0].items['p-custom-test'] === 2
+      );
+      assert(
+        'preset removes missing service reference',
+        !Object.prototype.hasOwnProperty.call(DatApp.state.presets[0].items, 'missing')
+      );
+
+      DatApp.persistServices();
+      const reloaded = DatApp.createState(localStorage);
+      assert(
+        'custom service persists after storage reload',
+        reloaded.services.printing.some(service => service.id === 'p-custom-test')
+      );
+
+      const legacyCatalog = DatApp.cloneData(DatApp.DEFAULT_DATA);
+      legacyCatalog.printing.push({ id: 'p2', name: 'Black & White Printing', price: 1, unit: 'per page', desc: '' });
+      legacyCatalog.souvenirs.push({
+        id: 's-custom-test',
+        name: 'Custom Souvenir Test',
+        price: 5,
+        unit: 'per piece',
+        desc: '',
+      });
+      localStorage.setItem(serviceKey, JSON.stringify(legacyCatalog));
+      const normalized = DatApp.createState(localStorage);
+      assert(
+        'legacy removed service is not restored',
+        !normalized.services.printing.some(service => service.id === 'p2')
+      );
+      assert(
+        'legacy normalization keeps custom IDs',
+        normalized.services.souvenirs.some(service => service.id === 's-custom-test')
+      );
+    } catch (error) {
+      report('test run completed', false, error.message);
+    } finally {
+      restore(serviceKey, originalServices);
+      restore(presetKey, originalPresets);
+    }
+  });
+</script>
+</body>
+</html>
