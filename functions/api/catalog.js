@@ -23,6 +23,10 @@ function hasValidToken(request, env) {
   return header === 'Bearer ' + expected;
 }
 
+function catalogStore(env) {
+  return env.DAT_CATALOG || env.KV || null;
+}
+
 function isService(service) {
   return service
     && typeof service.id === 'string'
@@ -65,11 +69,12 @@ function normalizeCatalogPayload(payload) {
 }
 
 export async function onRequestGet({ env }) {
-  if (!env.DAT_CATALOG) {
-    return json({ error: 'Missing DAT_CATALOG KV binding' }, { status: 500 });
+  const store = catalogStore(env);
+  if (!store) {
+    return json({ error: 'Missing KV binding. Use DAT_CATALOG or KV.' }, { status: 500 });
   }
 
-  const catalog = await env.DAT_CATALOG.get(CATALOG_KEY, { type: 'json' });
+  const catalog = await store.get(CATALOG_KEY, { type: 'json' });
   if (!catalog) {
     return json({ error: 'Catalog has not been published yet' }, { status: 404 });
   }
@@ -78,8 +83,9 @@ export async function onRequestGet({ env }) {
 }
 
 export async function onRequestPost({ request, env }) {
-  if (!env.DAT_CATALOG) {
-    return json({ error: 'Missing DAT_CATALOG KV binding' }, { status: 500 });
+  const store = catalogStore(env);
+  if (!store) {
+    return json({ error: 'Missing KV binding. Use DAT_CATALOG or KV.' }, { status: 500 });
   }
 
   if (!hasValidToken(request, env)) return unauthorized();
@@ -96,7 +102,7 @@ export async function onRequestPost({ request, env }) {
     return json({ error: 'Invalid catalog shape' }, { status: 400 });
   }
 
-  await env.DAT_CATALOG.put(CATALOG_KEY, JSON.stringify(catalog));
+  await store.put(CATALOG_KEY, JSON.stringify(catalog));
   return json(catalog);
 }
 
