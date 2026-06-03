@@ -8,7 +8,7 @@ Features
 
 - Configure services under General Printing, Souvenirs, Framing, and Branding.
 - Persist service edits in the browser with `localStorage`.
-- Generate a customer-facing brochure page with `customer.html`.
+- Serve the customer-facing brochure from `/customer/page/`.
 - Maintain a price list with editable service names, descriptions, units, and prices.
 - Build quick estimates with the calculator and save reusable presets.
 - Keep the customer brochure responsive for desktop and mobile.
@@ -20,6 +20,12 @@ Project Structure
 .
 ├── index.html
 ├── customer.html
+├── customer
+│   └── page
+│       └── index.html
+├── admin
+│   └── view
+│       └── index.html
 ├── functions
 │   └── api
 │       └── catalog.js
@@ -42,8 +48,10 @@ Project Structure
 File Responsibilities
 ---------------------
 
-- `index.html`: Admin/configure page markup, external font/icon imports, and script loading order.
-- `customer.html`: Customer-facing brochure entrypoint that reuses the shared CSS and service rendering logic.
+- `index.html`: Lightweight status page for domain health checks.
+- `customer.html`: Legacy customer-facing brochure entrypoint that remains available for old copied links.
+- `customer/page/index.html`: Customer-facing brochure entrypoint.
+- `admin/view/index.html`: Admin/configure page markup, external font/icon imports, and script loading order.
 - `functions/api/catalog.js`: Cloudflare Pages Function for shared catalog reads and token-protected admin writes.
 - `wrangler.toml`: Cloudflare Pages configuration, including the KV namespace binding.
 - `assets/css/styles.css`: All visual styling, responsive rules, customer brochure layout, cards, modals, and animations.
@@ -58,7 +66,7 @@ File Responsibilities
 How To Use
 ----------
 
-Open `index.html` in a browser.
+Open `admin/view/index.html` in a browser.
 
 Use the main tabs:
 
@@ -69,15 +77,15 @@ Use the main tabs:
 Customer View
 -------------
 
-The customer page uses the same service data from the configure page.
+The customer page uses the same service data from the configure page. On Cloudflare Pages, the brochure lives at:
 
 To open it manually:
 
 ```text
-customer.html
+/customer/page/
 ```
 
-The `Send to Customer` button creates this link and copies it to the clipboard. Old `index.html?view=customer` links are still supported temporarily.
+The `Send to Customer` button creates this customer-page link and copies it to the clipboard. `customer.html` and old `?view=customer` links are still supported temporarily.
 
 Persistence
 -----------
@@ -90,8 +98,8 @@ Data is stored in the browser's `localStorage` first.
 
 When deployed on Cloudflare Pages with the KV binding below, the app also supports shared online data:
 
-- `customer.html` reads the published cloud catalog from `/api/catalog`.
-- `index.html` can publish services and presets to `/api/catalog`.
+- `customer/page/index.html` and `customer.html` read the published cloud catalog from `/api/catalog`.
+- `admin/view/index.html` can publish services and presets to `/api/catalog`.
 - Admin cloud writes require the secret token configured as `ADMIN_TOKEN`.
 
 Cloudflare Pages Setup
@@ -123,7 +131,7 @@ ADMIN_TOKEN=<your private admin token>
 
 After deployment:
 
-1. Open `index.html`.
+1. Open `/admin/view/`.
 2. Go to `Price List`.
 3. Enter the Cloud admin token.
 4. Click `Save Token`.
@@ -135,7 +143,7 @@ The customer page will then load the shared cloud catalog. If Cloudflare KV is n
 Development Notes
 -----------------
 
-- Keep the script order in `index.html` unchanged unless you also update dependencies between files.
+- Keep the script order in `admin/view/index.html` unchanged unless you also update dependencies between files.
 - The app intentionally uses one plain JavaScript global: `window.DatApp`.
 - HTML events are bound through delegated listeners in `assets/js/app.js` using `data-action` attributes.
 - Fonts and icons load from CDNs, with CSS fallbacks for readable system fonts if the font CDN is unavailable.

@@ -5,10 +5,20 @@
     url.search = '';
     url.hash = '';
 
-    if (url.pathname.endsWith('/') || !url.pathname.match(/\.html$/i)) {
-      url.pathname = url.pathname.replace(/\/?$/, '/') + 'customer.html';
-    } else {
-      url.pathname = url.pathname.replace(/[^/]+$/i, 'customer.html');
+    const adminMatch = url.pathname.match(/^(.*)\/admin\/view(?:\/index\.html|\/)?$/i);
+    if (adminMatch) {
+      const basePath = adminMatch[1] || '';
+      url.pathname = basePath + '/customer/page/' + (url.protocol === 'file:' ? 'index.html' : '');
+      return url.href;
+    }
+
+    if (/\/customer\.html$/i.test(url.pathname)) {
+      url.pathname = url.pathname.replace(/\/customer\.html$/i, '/customer/page/' + (url.protocol === 'file:' ? 'index.html' : ''));
+      return url.href;
+    }
+
+    if (/\/customer\/page\/index\.html$/i.test(url.pathname) && url.protocol !== 'file:') {
+      url.pathname = url.pathname.replace(/\/index\.html$/i, '/');
     }
 
     return url.href;
