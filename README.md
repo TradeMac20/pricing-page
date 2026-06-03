@@ -23,6 +23,7 @@ Project Structure
 ├── functions
 │   └── api
 │       └── catalog.js
+├── wrangler.jsonc
 ├── README.md
 ├── tests
 │   └── persistence.test.html
@@ -44,6 +45,7 @@ File Responsibilities
 - `index.html`: Admin/configure page markup, external font/icon imports, and script loading order.
 - `customer.html`: Customer-facing brochure entrypoint that reuses the shared CSS and service rendering logic.
 - `functions/api/catalog.js`: Cloudflare Pages Function for shared catalog reads and token-protected admin writes.
+- `wrangler.jsonc`: Cloudflare Pages configuration, including the KV namespace binding.
 - `assets/css/styles.css`: All visual styling, responsive rules, customer brochure layout, cards, modals, and animations.
 - `assets/js/data.js`: The `window.DatApp` namespace, default service data, category metadata, preset defaults, normalization, localStorage keys, and app state.
 - `assets/js/navigation.js`: Main tab switching and service category switching.
@@ -104,13 +106,14 @@ Build output directory: .
 Root directory: project root
 ```
 
-Create a Cloudflare KV namespace and bind it to the Pages project:
+The KV namespace is configured in `wrangler.jsonc`:
 
 ```text
-Binding name: DAT_CATALOG
+Binding name: KV
+Namespace ID: 5c25a55b3a10411a9f99cb644df41266
 ```
 
-`DAT_CATALOG` is preferred. If you already named the binding `KV`, the function also accepts that name.
+The function also accepts `DAT_CATALOG`, but this repo now uses `KV` in Wrangler config.
 
 Add an environment variable or secret:
 
