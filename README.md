@@ -23,7 +23,7 @@ Project Structure
 ├── functions
 │   └── api
 │       └── catalog.js
-├── wrangler.jsonc
+├── wrangler.toml
 ├── README.md
 ├── tests
 │   └── persistence.test.html
@@ -45,7 +45,7 @@ File Responsibilities
 - `index.html`: Admin/configure page markup, external font/icon imports, and script loading order.
 - `customer.html`: Customer-facing brochure entrypoint that reuses the shared CSS and service rendering logic.
 - `functions/api/catalog.js`: Cloudflare Pages Function for shared catalog reads and token-protected admin writes.
-- `wrangler.jsonc`: Cloudflare Pages configuration, including the KV namespace binding.
+- `wrangler.toml`: Cloudflare Pages configuration, including the KV namespace binding.
 - `assets/css/styles.css`: All visual styling, responsive rules, customer brochure layout, cards, modals, and animations.
 - `assets/js/data.js`: The `window.DatApp` namespace, default service data, category metadata, preset defaults, normalization, localStorage keys, and app state.
 - `assets/js/navigation.js`: Main tab switching and service category switching.
@@ -106,7 +106,7 @@ Build output directory: .
 Root directory: project root
 ```
 
-The KV namespace is configured in `wrangler.jsonc`:
+The KV namespace is configured in `wrangler.toml`:
 
 ```text
 Binding name: KV
