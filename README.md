@@ -50,7 +50,7 @@ File Responsibilities
 - `index.html`: Lightweight status page for domain health checks.
 - `customer/page/index.html`: Customer-facing brochure entrypoint.
 - `admin/view/index.html`: Admin/configure page markup, external font/icon imports, and script loading order.
-- `functions/api/catalog.js`: Cloudflare Pages Function for shared catalog reads and token-protected admin writes.
+- `functions/api/catalog/index.js`: Cloudflare Pages Function for shared catalog reads and token-protected admin writes.
 - `functions/customer.js`: Explicit 404 guard for `/customer` and `/customer/`; the customer page is only `/customer/page/`.
 - `wrangler.toml`: Cloudflare Pages configuration, including the KV namespace binding.
 - `assets/css/styles.css`: All visual styling, responsive rules, customer brochure layout, cards, modals, and animations.
