@@ -12,11 +12,6 @@
       return url.href;
     }
 
-    if (/\/customer\.html$/i.test(url.pathname)) {
-      url.pathname = url.pathname.replace(/\/customer\.html$/i, '/customer/page/' + (url.protocol === 'file:' ? 'index.html' : ''));
-      return url.href;
-    }
-
     if (/\/customer\/page\/index\.html$/i.test(url.pathname) && url.protocol !== 'file:') {
       url.pathname = url.pathname.replace(/\/index\.html$/i, '/');
     }

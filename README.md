@@ -19,7 +19,6 @@ Project Structure
 ```text
 .
 ├── index.html
-├── customer.html
 ├── customer
 │   └── page
 │       └── index.html
@@ -48,7 +47,6 @@ File Responsibilities
 ---------------------
 
 - `index.html`: Lightweight status page for domain health checks.
-- `customer.html`: Legacy customer-facing brochure entrypoint that remains available for old copied links.
 - `customer/page/index.html`: Customer-facing brochure entrypoint.
 - `admin/view/index.html`: Admin/configure page markup, external font/icon imports, and script loading order.
 - `functions/api/catalog.js`: Cloudflare Pages Function for shared catalog reads and token-protected admin writes.
@@ -83,7 +81,7 @@ To open it manually:
 /customer/page/
 ```
 
-The `Send to Customer` button creates this customer-page link and copies it to the clipboard. `customer.html` and old `?view=customer` links are still supported temporarily.
+The `Send to Customer` button creates this customer-page link and copies it to the clipboard. Old `?view=customer` links are still forwarded to the customer page temporarily.
 
 Persistence
 -----------
@@ -96,7 +94,7 @@ Data is stored in the browser's `localStorage` first.
 
 When deployed on Cloudflare Pages with the KV binding below, the app also supports shared online data:
 
-- `customer/page/index.html` and `customer.html` read the published cloud catalog from `/api/catalog`.
+- `customer/page/index.html` reads the published cloud catalog from `/api/catalog`.
 - `admin/view/index.html` can publish services and presets to `/api/catalog`.
 - Admin cloud writes require the secret token configured as `ADMIN_TOKEN`.
 
